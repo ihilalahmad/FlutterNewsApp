@@ -5,6 +5,7 @@ import 'package:flutter_news_app/helpers/news.dart';
 import 'package:flutter_news_app/models/article_model.dart';
 import 'package:flutter_news_app/models/category_model.dart';
 import 'package:flutter_news_app/views/article_view.dart';
+import 'package:flutter_news_app/views/category_news.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -61,65 +62,70 @@ class _HomeState extends State<Home> {
       ),
       body: _loading
           ? Center(
-              child: Container(child: CircularProgressIndicator()),
+        child: Container(child: CircularProgressIndicator()),
 
-              ///loading categories
-            )
+        ///loading categories
+      )
           : SingleChildScrollView(
-              child: Container(
-                margin: EdgeInsets.only(top: 8),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 70,
-                      child: ListView.builder(
-                        itemCount: categories.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return CategoryTile(
-                            imageUrl: categories[index].categoryImageUrl,
-                            categoryName: categories[index].categoryName,
-                          );
-                        },
-                      ),
-                    ),
-
-                    ///loading articles
-                    Container(
-                      padding: EdgeInsets.only(top: 16),
-                      child: ListView.builder(
-                        itemCount: articles.length,
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return PostCard(
-                              articles[index].title,
-                              articles[index].urlToImage,
-                              articles[index].description,
-                              articles[index].url
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+        child: Container(
+          margin: EdgeInsets.only(top: 8),
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              Container(
+                height: 70,
+                child: ListView.builder(
+                  itemCount: categories.length,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return CategoryTile(
+                      imageUrl: categories[index].categoryImageUrl,
+                      categoryName: categories[index].categoryName,
+                    );
+                  },
                 ),
               ),
-            ),
+
+              ///loading articles
+              Container(
+                padding: EdgeInsets.only(top: 16),
+                child: ListView.builder(
+                  itemCount: articles.length,
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return PostCard(
+                        articles[index].title,
+                        articles[index].urlToImage,
+                        articles[index].description,
+                        articles[index].url
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
 class CategoryTile extends StatelessWidget {
-  final imageUrl, categoryName;
+  final String imageUrl, categoryName;
 
-  CategoryTile({this.imageUrl, this.categoryName});
+  CategoryTile({required this.imageUrl, required this.categoryName});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(
+            builder: (context) => CategoryNews(categoryName: categoryName.toString().toLowerCase())
+        ),
+        );
+      },
       child: Container(
         margin: EdgeInsets.only(right: 16),
         child: Stack(
@@ -161,7 +167,8 @@ class PostCard extends StatelessWidget {
   final String postDescription;
   final String articleUrl;
 
-  PostCard(this.postTitle, this.postImageUrl, this.postDescription, this.articleUrl);
+  PostCard(this.postTitle, this.postImageUrl, this.postDescription,
+      this.articleUrl);
 
   @override
   Widget build(BuildContext context) {
@@ -170,9 +177,11 @@ class PostCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ArticleView(
-              articleUrl: articleUrl
-            ),
+            builder: (context) =>
+                ArticleView(
+                  articleTitle: postTitle,
+                    articleUrl: articleUrl
+                ),
           ),
         );
       },
